@@ -1,14 +1,22 @@
 interface Vehicle {
     name: string,
     plate: string,
-    prohibited: Date
+    prohibited: Date | string
 }
 
 (function(){
     const $ = (query: string): HTMLInputElement | null =>
         document.querySelector(query)
 
+        function calculateTime(milliseconds: number){
+            const minutes = Math.floor(milliseconds / 60000)
+            const seconds = Math.floor((milliseconds % 60000) / 1000)
+
+            return `${minutes}m e ${seconds}s`
+        }
+
         function parking(){
+            
             function read(): Vehicle[]{
                 return localStorage.parking ? JSON.parse(localStorage.parking) : []
             }
@@ -28,13 +36,26 @@ interface Vehicle {
                     <button class="delete" data-plate="${vehicle.plate}"> Remover </button>
                 </td>
                 `
+
+                row.querySelector(".delete")?.addEventListener("click", function(){
+                    remove(this.dataset.plate)
+                })
+
                 $("#parking")?.appendChild(row)
 
                 if(save) toSave([...read(), vehicle])
             }
 
-            function remove(){
+            function remove(plate: string){
+                const { prohibited, name } = read().find(
+                    (vehicle) => vehicle.plate === plate)
 
+                const time = calculateTime(new Date().getTime() - new Date(prohibited).getTime())
+
+                if(!confirm(`O veículo ${name} permaneceu por ${time}. Deseja encerrar?`)) return
+
+                toSave(read().filter((vehicle) => vehicle.plate !== plate))
+                render()
             }            
 
             function render(){
@@ -42,7 +63,7 @@ interface Vehicle {
                 const parking = read()
 
                 if(parking.length){
-                    parking.forEach(vehicle => add(vehicle))
+                    parking.forEach((vehicle) => add(vehicle))
                 }
             }
 
@@ -60,6 +81,6 @@ interface Vehicle {
             return
         }
 
-        parking().add({ name, plate, prohibited: new Date()}, true)
+        parking().add({ name, plate, prohibited: new Date().toISOString()}, true)
     })
 })()
