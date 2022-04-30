@@ -4,8 +4,12 @@
     const $ = (query) => document.querySelector(query);
     function parking() {
         function read() {
+            return localStorage.parking ? JSON.parse(localStorage.parking) : [];
         }
-        function add(vehicle) {
+        function toSave(vehicle) {
+            localStorage.setItem("parking", JSON.stringify(vehicle));
+        }
+        function add(vehicle, save) {
             var _a;
             const row = document.createElement("tr");
             row.innerHTML = `
@@ -17,15 +21,21 @@
                 </td>
                 `;
             (_a = $("#parking")) === null || _a === void 0 ? void 0 : _a.appendChild(row);
+            if (save)
+                toSave([...read(), vehicle]);
         }
         function remove() {
         }
-        function save() {
-        }
         function render() {
+            $("#parking").innerHTML = "";
+            const parking = read();
+            if (parking.length) {
+                parking.forEach(vehicle => add(vehicle));
+            }
         }
-        return { read, add, remove, save, render };
+        return { read, add, remove, toSave, render };
     }
+    parking().render();
     (_a = $("#register")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => {
         var _a, _b;
         const name = (_a = $("#name")) === null || _a === void 0 ? void 0 : _a.value;
@@ -34,6 +44,6 @@
             alert("Os campos nome e placa são obrigatórios");
             return;
         }
-        parking().add({ name, plate, prohibited: new Date() });
+        parking().add({ name, plate, prohibited: new Date() }, true);
     });
 })();
