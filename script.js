@@ -31,7 +31,7 @@
         const name = (_a = $("#name")) === null || _a === void 0 ? void 0 : _a.value;
         const plate = (_b = $("#plate")) === null || _b === void 0 ? void 0 : _b.value;
         if (!name || !plate) {
-            alert("Os campos name e plate são obrigatórios");
+            alert("Os campos nome e placa são obrigatórios");
             return;
         }
         parking().add({ name, plate, prohibited: new Date() });

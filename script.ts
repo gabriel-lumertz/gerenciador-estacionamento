@@ -48,7 +48,7 @@ interface Vehicle {
         const plate = $("#plate")?.value
 
         if(!name || !plate){
-            alert("Os campos name e plate são obrigatórios")
+            alert("Os campos nome e placa são obrigatórios")
             return
         }
 
